@@ -7,6 +7,9 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  # Backend configuration is in backend.tf
+  # Run bootstrap/ first to create the S3 bucket and DynamoDB table
 }
 
 provider "aws" {
