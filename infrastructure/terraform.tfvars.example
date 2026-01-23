@@ -1,0 +1,11 @@
+# Copy this file to terraform.tfvars and update with your values
+
+aws_region = "eu-west-2"
+
+# IMPORTANT: This must be globally unique across all AWS accounts
+# Consider adding a random suffix or your organization name
+bucket_name = "two-lights-one-wight-website-12345"
+
+environment = "production"
+
+cloudfront_price_class = "PriceClass_100"
