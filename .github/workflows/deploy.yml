@@ -1,0 +1,122 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  AWS_REGION: eu-west-2
+  NODE_VERSION: '18'
+  TERRAFORM_VERSION: '1.6.0'
+
+jobs:
+  deploy:
+    name: Build and Deploy to AWS
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write # Required for AWS OIDC authentication
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
+      - name: Verify dist folder
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist folder not created"
+            exit 1
+          fi
+          echo "Build successful - dist folder contents:"
+          ls -la dist/
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false # Disable wrapper for raw outputs
+
+      - name: Terraform Init
+        working-directory: ./infrastructure
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: ./infrastructure
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ./infrastructure
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ./infrastructure
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get Terraform Outputs
+        working-directory: ./infrastructure
+        id: tf-outputs
+        run: |
+          echo "bucket_name=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+          echo "distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+          echo "website_url=$(terraform output -raw website_endpoint)" >> $GITHUB_OUTPUT
+
+      - name: Sync files to S3
+        run: |
+          # Upload static assets with long cache
+          aws s3 sync dist/ s3://${{ steps.tf-outputs.outputs.bucket_name }}/ \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "*.html" \
+            --exclude "*.json" \
+            --exclude "*.txt" \
+            --exclude "*.xml"
+
+          # Upload HTML and config files with short cache
+          aws s3 sync dist/ s3://${{ steps.tf-outputs.outputs.bucket_name }}/ \
+            --cache-control "public,max-age=300" \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --include "*.txt" \
+            --include "*.xml"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.tf-outputs.outputs.distribution_id }} \
+            --paths "/*"
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Website URL:** ${{ steps.tf-outputs.outputs.website_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**S3 Bucket:** ${{ steps.tf-outputs.outputs.bucket_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**CloudFront Distribution:** ${{ steps.tf-outputs.outputs.distribution_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build Time:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CloudFront cache invalidation initiated. Changes may take a few minutes to propagate." >> $GITHUB_STEP_SUMMARY
