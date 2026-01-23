@@ -8,7 +8,7 @@ terraform {
     bucket = "two-lights-one-wight-tfstate"
 
     key            = "two-lights-one-wight/terraform.tfstate"
-    region         = "eu-west-2"
+    region         = "eu-west-1"
 
     # Enable encryption at rest
     encrypt = true
