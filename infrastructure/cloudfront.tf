@@ -125,6 +125,8 @@ resource "aws_cloudfront_distribution" "website" {
     response_page_path = "/404.html"
   }
 
+  wait_for_deployment = false
+
   tags = {
     Name = "Two Lights One Wight CloudFront"
   }
