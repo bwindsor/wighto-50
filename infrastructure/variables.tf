@@ -21,3 +21,9 @@ variable "cloudfront_price_class" {
   type        = string
   default     = "PriceClass_100" # US, Canada, Europe
 }
+
+variable "hosted_zone_name" {
+  description = "Hosted zone name"
+  type        = string
+  default     = "wight50.uk"
+}
