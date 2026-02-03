@@ -149,6 +149,17 @@ ul {
   align-items: center;
 }
 
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.nav-logo {
+  height: 40px;
+  width: auto;
+}
+
 .nav-brand h2 {
   color: var(--color-primary);
   font-size: 1.25rem;
@@ -221,6 +232,13 @@ ul {
   text-align: center;
   position: relative;
   z-index: 2;
+}
+
+.hero-logo {
+  width: 150px;
+  height: auto;
+  margin: 0 auto var(--spacing-md);
+  filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 .hero-badge {
@@ -481,7 +499,7 @@ ul {
    ========================================================================== */
 
 .contact-section {
-  background: white;
+  background: var(--color-bg-light);
 }
 
 .contact-content {
@@ -575,6 +593,12 @@ ul {
   margin-bottom: var(--spacing-lg);
 }
 
+.footer-logo {
+  width: 60px;
+  height: auto;
+  margin-bottom: var(--spacing-sm);
+}
+
 .footer-section h4 {
   color: white;
   margin-bottom: var(--spacing-md);
@@ -625,12 +649,24 @@ ul {
     --spacing-lg: 2rem;
   }
 
+  .nav-logo {
+    height: 32px;
+  }
+
+  .nav-brand h2 {
+    font-size: 1rem;
+  }
+
   .nav-menu {
     display: none;
   }
 
   .hero {
     min-height: 450px;
+  }
+
+  .hero-logo {
+    width: 100px;
   }
 
   .hero-title {
