@@ -17,7 +17,7 @@ resource "aws_acm_certificate" "ssl_certificate" {
     create_before_destroy = true
   }
   tags = {
-    Name = "${var.hosted_zone_name} (including www)"
+    Name = var.hosted_zone_name
   }
 
   provider = aws.us-east-1
