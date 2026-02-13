@@ -1,7 +1,7 @@
 # CloudFront Origin Access Control
 resource "aws_cloudfront_origin_access_control" "website" {
   name                              = "${var.bucket_name}-oac"
-  description                       = "OAC for Two Lights One Wight website"
+  description                       = "OAC for Needles and Knolls website"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
@@ -11,9 +11,10 @@ resource "aws_cloudfront_origin_access_control" "website" {
 resource "aws_cloudfront_distribution" "website" {
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "Two Lights One Wight - WIGHTO 50th Anniversary"
+  comment             = "Needles and Knolls - WIGHTO 50th Anniversary"
   default_root_object = "index.html"
   price_class         = var.cloudfront_price_class
+  aliases             = [var.hosted_zone_name]
 
   origin {
     domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
@@ -108,11 +109,9 @@ resource "aws_cloudfront_distribution" "website" {
     }
   }
 
-  aliases = [var.hosted_zone_name]
-
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate_validation.main_website_cert.certificate_arn
-    ssl_support_method = "sni-only"
+    acm_certificate_arn      = aws_acm_certificate_validation.main_website_cert.certificate_arn
+    ssl_support_method       = "sni-only"
   }
 
   custom_error_response {
@@ -130,6 +129,6 @@ resource "aws_cloudfront_distribution" "website" {
   wait_for_deployment = false
 
   tags = {
-    Name = "Two Lights One Wight CloudFront"
+    Name = "Needles and Knolls CloudFront"
   }
 }

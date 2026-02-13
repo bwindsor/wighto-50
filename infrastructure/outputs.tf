@@ -18,6 +18,11 @@ output "s3_bucket_arn" {
   value       = aws_s3_bucket.website.arn
 }
 
+output "www_redirect_distribution_id" {
+  description = "CloudFront distribution ID for WWW redirect"
+  value       = aws_cloudfront_distribution.www_redirect.id
+}
+
 output "website_endpoint" {
   description = "Full HTTPS URL to access the website"
   value       = "https://${aws_cloudfront_distribution.website.domain_name}"

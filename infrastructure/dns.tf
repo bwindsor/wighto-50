@@ -9,14 +9,15 @@ data "aws_route53_zone" "hosted_zone" {
 }
 
 resource "aws_acm_certificate" "ssl_certificate" {
-  domain_name       = var.hosted_zone_name
-  validation_method = "DNS"
+  domain_name               = var.hosted_zone_name
+  subject_alternative_names = ["www.${var.hosted_zone_name}"]
+  validation_method         = "DNS"
 
   lifecycle {
     create_before_destroy = true
   }
   tags = {
-    Name = var.hosted_zone_name
+    Name = "${var.hosted_zone_name} (including www)"
   }
 
   provider = aws.us-east-1
@@ -54,6 +55,19 @@ resource "aws_route53_record" "main_website_A" {
   alias {
     evaluate_target_health = true
     name                   = aws_cloudfront_distribution.website.domain_name
+    zone_id                = local.AWS_CLOUDFRONT_HOSTED_ZONE_ID
+  }
+}
+
+
+resource "aws_route53_record" "www_redirect_A" {
+  name    = "www.${var.hosted_zone_name}"
+  type    = "A"
+  zone_id = data.aws_route53_zone.hosted_zone.id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_cloudfront_distribution.www_redirect.domain_name
     zone_id                = local.AWS_CLOUDFRONT_HOSTED_ZONE_ID
   }
 }
