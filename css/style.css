@@ -294,6 +294,11 @@ ul {
   text-align: center;
 }
 
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
 .btn-primary {
   background: var(--color-accent);
   color: white;
