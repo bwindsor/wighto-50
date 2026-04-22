@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: eu-west-2
   NODE_VERSION: '18'
-  TERRAFORM_VERSION: '1.6.0'
+  TERRAFORM_VERSION: '1.14.9'
 
 jobs:
   deploy:
