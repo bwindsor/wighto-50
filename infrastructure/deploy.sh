@@ -50,16 +50,7 @@ echo ""
 echo "Step 3: Uploading files to S3..."
 aws s3 sync ../dist/ s3://${BUCKET_NAME}/ \
     --delete \
-    --cache-control "public,max-age=3600" \
-    --exclude "*.html" \
-    --exclude "*.json"
-
-# Upload HTML files with shorter cache
-aws s3 sync ../dist/ s3://${BUCKET_NAME}/ \
-    --cache-control "public,max-age=300" \
-    --exclude "*" \
-    --include "*.html" \
-    --include "*.json"
+    --cache-control "public,max-age=300"
 
 echo "Files uploaded successfully!"
 
