@@ -131,6 +131,26 @@ ul {
   white-space: nowrap;
 }
 
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+table.update-history td:first-child,
+table.update-history th:first-child {
+  font-weight: bold;
+  padding-right: 1rem;
+  min-width: 120px;
+}
+table.update-history {
+  border-spacing: 0;
+  width: 100%;
+}
+table.update-history tr:nth-child(odd) {
+  background-color: var(--color-bg-dark);
+}
+
 /* ==========================================================================
    Header & Navigation
    ========================================================================== */
