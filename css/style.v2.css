@@ -491,6 +491,11 @@ table.update-history tr:nth-child(odd) {
   gap: var(--spacing-md);
 }
 
+.one-column-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+}
 .info-card {
   background: white;
   padding: var(--spacing-lg);
