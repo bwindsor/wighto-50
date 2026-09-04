@@ -110,7 +110,7 @@ def append_new_entries(old_start_clock_data: list[dict], new_si_extract_data: li
             print(f"Updating SI number for {record["Name"]} on {matches[0]["Class"]} from [{matches[0]["ControlCardNumber"]}] to [{record["ControlCardNumber"]}]")
             matches[0]["ControlCardNumber"] = record["ControlCardNumber"]
         if matches[1]["ControlCardNumber"] != record["ControlCardNumber"]:
-            print(f"Updating SI number for {record["Name"]} on {matches[0]["Class"]} from [{matches[1]["ControlCardNumber"]}] to [{record["ControlCardNumber"]}]")
+            print(f"Updating SI number for {record["Name"]} on {matches[1]["Class"]} from [{matches[1]["ControlCardNumber"]}] to [{record["ControlCardNumber"]}]")
             matches[1]["ControlCardNumber"] = record["ControlCardNumber"]
 
 
@@ -127,7 +127,7 @@ def append_new_entries(old_start_clock_data: list[dict], new_si_extract_data: li
 
 
 ## Day 1 updates
-new_data = read_si_timing_export("Day1SITimingExport_20260830_231700.csv")
+new_data = read_si_timing_export("Day1SITimingExport_20260904_204000.csv")
 old_data = read_output_file("StartClockFile.csv")
 append_new_entries(old_data, new_data)
-write_output(old_data, "StartClockFile_20260830_231700.csv")
+write_output(old_data, "StartClockFile_20260904_204000.csv")
